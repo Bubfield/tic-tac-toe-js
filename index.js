@@ -1,3 +1,4 @@
+//state variables
 let userName = "";
 let userMark = "";
 let AIMark = "";
@@ -7,18 +8,13 @@ let activeBoard = ["", "", "", "", "", "", "", "", ""];
 let whoseTurn = null;
 let whoWon = null;
 
+//state setters
 function setUserName(name) {
   userName = name;
 }
 
 function setUserMark(mark) {
   userMark = mark;
-}
-
-function handleMarks(mark) {
-  setUserMark(mark);
-  setAIMark(mark === "X" ? "O" : "X");
-  whoGoesFirst(mark);
 }
 
 function setAIMark(mark) {
@@ -45,56 +41,12 @@ function setWhoseTurn(who) {
   whoseTurn = who;
 }
 
-function promptUserForName() {
-  let name;
-  do {
-    name = prompt("Hello and welcome to Tic Tac Toe! Please enter your name!");
-  } while (!name);
-  setUserName(name);
-}
+//essential functions
 
-function promptUserForMark() {
-  let mark;
-  do {
-    mark = prompt("Choose your mark. You can only choose X or O!");
-  } while (mark !== "X" && mark !== "O");
-  handleMarks(mark);
-}
-
-function displayGameBoard() {
-  let gameboard = document.querySelector(".gameboard");
-  gameboard.style.display = "flex";
-  handleClickOnGameboardSquares();
-}
-
-function hideStartButton(startButton) {
-  startButton.style.display = "none";
-}
-
-function hideHello() {
-  let hello = document.querySelector(".hello");
-  hello.style.display = "none";
-}
-
-function displayStartButton() {
-  let startButton = document.querySelector(".start-button");
-  startButton.style.display = "inline-block";
-  handleClickOnStartButton(startButton);
-}
-
-function displayHello() {
-  let hello = document.querySelector(".hello");
-  hello.style.display = "block";
-  hello.textContent = `Hello ${userName}!`;
-}
-
-function handleClickOnStartButton(startButton) {
-  startButton.addEventListener("click", () => {
-    hideStartButton(startButton);
-    hideHello();
-    setGameStatus("active");
-    OnAppStart();
-  });
+function handleMarks(mark) {
+  setUserMark(mark);
+  setAIMark(mark === "X" ? "O" : "X");
+  whoGoesFirst(mark);
 }
 
 function whoGoesFirst(mark) {
@@ -105,7 +57,7 @@ function whoGoesFirst(mark) {
   }
 }
 
-function handleRestart() {
+function fullRestart() {
   setOpenSquares([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   setUserName("");
   setUserMark("");
@@ -181,9 +133,100 @@ function checkForWin() {
 }
 
 function checkForDraw() {
-  if (!checkForWin() && !openSquares.length) {
-    return true;
-  }
+  return !checkForWin() && !openSquares.length;
+}
+
+//DOM manipulation functions
+
+function XorODiv() {
+  let XorODiv = document.querySelector(".XorO-div");
+  XorODiv.style.display = "block";
+}
+
+function hideWhatIsNameDiv() {
+  let whatIsNameDiv = document.querySelector(".whatisname-div");
+  whatIsNameDiv.style.display = "none";
+}
+
+function enterName() {
+  let enterName = document.querySelector(".enter-name");
+  enterName.addEventListener("click", () => {
+    displayHello();
+    setTimeout(() => {
+      hideWhatIsNameDiv();
+      XorODiv();
+      clickOnXorOMarks();
+    }, 1000);
+  });
+}
+
+function inputUserName() {
+  let name = document.getElementById("name");
+  name.addEventListener("change", (e) => {
+    setUserName(e.target.value);
+  });
+}
+
+function clickOnXorOMarks() {
+  let X = document.querySelector(".X");
+  let O = document.querySelector(".O");
+  X.addEventListener("click", () => {
+    handleMarks("X");
+    displayStartButton();
+  });
+
+  O.addEventListener("click", () => {
+    handleMarks("O");
+    displayStartButton();
+  });
+}
+
+function displayGameBoard() {
+  let gameboard = document.querySelector(".gameboard");
+  gameboard.style.display = "flex";
+  handleClickOnGameboardSquares();
+}
+
+function hideStartButton(startButton) {
+  startButton.style.display = "none";
+}
+
+function hideHello() {
+  let hello = document.querySelector(".hello");
+  hello.style.display = "none";
+}
+
+function displayStartButton() {
+  let startButton = document.querySelector(".start-button");
+  startButton.style.display = "inline-block";
+  handleClickOnStartButton(startButton);
+}
+
+function displayHello() {
+  let hello = document.querySelector(".hello");
+  hello.style.display = "block";
+  hello.textContent = `Hello ${userName}!`;
+}
+
+function hideNoteDiv() {
+  let noteDiv = document.querySelector(".note-div");
+  noteDiv.style.display = "none";
+}
+
+function hideXorODiv() {
+  let XorODiv = document.querySelector(".XorO-div");
+  XorODiv.style.display = "none";
+}
+
+function handleClickOnStartButton(startButton) {
+  startButton.addEventListener("click", () => {
+    hideStartButton(startButton);
+    hideNoteDiv();
+    hideXorODiv();
+    hideHello();
+    setGameStatus("active");
+    OnAppStart();
+  });
 }
 
 function playerMove(square, squareIndex) {
@@ -271,18 +314,34 @@ function hideAnotherRoundBtn() {
   hideAnotherRoundBtn.style.display = "none";
 }
 
+function displayNoteDiv() {
+  let noteDiv = document.querySelector(".note-div");
+  noteDiv.style.display = "block";
+}
+
+function displayWhatIsNameDiv() {
+  let whatIsNameDiv = document.querySelector(".whatisname-div");
+  whatIsNameDiv.style.display = "block";
+}
+
+function clearInputUserName() {
+  let name = document.getElementById("name");
+  name.value = "";
+}
+
 function handleRestartButton(restart) {
   restart.addEventListener("click", () => {
-    handleRestart();
+    fullRestart();
     clearGameBoard();
     hideGameboard();
     clearWinText();
     hideDraw();
     hideRestartBtn();
     hideAnotherRoundBtn();
-    setTimeout(() => {
-      OnAppStart();
-    }, 1000);
+    clearInputUserName();
+    displayNoteDiv();
+    displayWhatIsNameDiv();
+    OnAppStart();
   });
 }
 
@@ -312,12 +371,13 @@ function displayAnotherRoundBtn() {
 
 function OnAppStart() {
   if (gameStatus === "new") {
-    promptUserForName();
-    promptUserForMark();
-    displayStartButton();
-    displayHello();
+    inputUserName();
+    enterName();
   } else if (gameStatus === "active") {
     displayGameBoard();
+    if (userMark === "O") {
+      AIMove();
+    }
   } else if (gameStatus === "won") {
     displayWin();
   } else if (gameStatus === "draw") {
