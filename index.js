@@ -1,3 +1,10 @@
+/*Hey Michael, the main thing that confused me was the way I was 
+using the OnAppStart function. I had to re-use it several times 
+as a way to "re-render" the app so that any changes I made to the gameStatus variable
+would take effect and let me progress through the app. I wasn't sure how 
+else to get around that issue and this probably isn't the way you intended
+the OnAppStart function to be used. It's all the way down at the bottom.*/
+
 //state variables
 let userName = "";
 let user = { player: "User", mark: null };
@@ -41,7 +48,7 @@ function setWhoseTurn(who) {
   whoseTurn = who;
 }
 
-//essential functions
+//important functions
 const whoGoesFirst = (mark) => {
   if (mark === "X") {
     setWhoseTurn("User");
@@ -164,7 +171,11 @@ const checkForDraw = () => {
   return !checkForWin() && !openSquares.length;
 };
 
-//DOM manipulation functions
+function thereIsNoWinnerOrDraw() {
+  return !whoWon && gameStatus !== "draw";
+}
+
+//DOM manipulation
 function XorODiv() {
   let XorODiv = document.querySelector(".XorO-div");
   XorODiv.style.display = "block";
@@ -257,8 +268,7 @@ function clearInputUserName() {
   name.value = "";
 }
 
-//adding event listeners and functions
-
+//adding event listeners and functions they execute
 function enterNameOnClick() {
   displayHello();
   setTimeout(() => {
@@ -338,10 +348,10 @@ function playerMove(squareIndex) {
 function AIMove() {
   let randomIndex = Math.floor(Math.random() * openSquares.length);
   setTimeout(() => {
-    if (whoseTurn === "AI" && !whoWon && gameStatus !== "draw") {
+    if (whoseTurn === "AI" && thereIsNoWinnerOrDraw()) {
       document.getElementById(openSquares[randomIndex]).textContent = AI.mark;
+      placeMark(AI, openSquares[randomIndex] - 1);
     }
-    placeMark(AI, openSquares[randomIndex] - 1);
     if (checkForWin()) {
       setGameStatus("won");
       OnAppStart();
