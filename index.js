@@ -1,14 +1,11 @@
 import { pubsub } from "./pubsub.js";
 import {
   user,
-  userName,
   gameStatus,
   whoWon,
   setUserName,
 } from "./appStateAndFunctions/appStateAndSetters.js";
 import {
-  gameboard,
-  startBtn,
   winDiv,
   restartBtn,
   anotherRndBtn,
@@ -17,12 +14,6 @@ import {
   name,
   enterNameBtn,
   gameboardSquares,
-  noteDiv,
-  XorODiv,
-  hello,
-  whatIsNameDiv,
-  X,
-  O,
 } from "./DOMmanipulation/listOfElements.js";
 import {
   addListener,
@@ -35,8 +26,6 @@ import {
   executeAIMove,
   clickEnterNameBtn,
   clickSquares,
-  clickStartBtn,
-  clickXorOMark,
 } from "./DOMmanipulation/eventListenerFunctions.js";
 
 export function onAppStart() {
@@ -46,28 +35,13 @@ export function onAppStart() {
 
 onAppStart();
 
-pubsub.subscribe("click enter btn", () => {
-  assignText(hello, `Hello ${userName}!`);
-  changeElementDisplay(hello, "block");
-  changeElementDisplay(XorODiv, "block");
-  changeElementDisplay(whatIsNameDiv, "none");
-  addListener(X, "click", () => clickXorOMark("X"));
-  addListener(O, "click", () => clickXorOMark("O"));
-});
-pubsub.subscribe("setGameStatus to active", () => {
-  changeElementDisplay(startBtn, "none");
-  changeElementDisplay(noteDiv, "none");
-  changeElementDisplay(XorODiv, "none");
-  changeElementDisplay(hello, "none");
-  changeElementDisplay(gameboard, "flex");
-  addListener(gameboardSquares, "click", (e) => clickSquares(e));
-  if (user.mark === "O") {
-    executeAIMove();
+pubsub.subscribe("click start btn or another round btn", () => {
+  if (gameStatus === "active") {
+    addListener(gameboardSquares, "click", (e) => clickSquares(e));
+    if (user.mark === "O") {
+      executeAIMove();
+    }
   }
-});
-pubsub.subscribe("click X or O mark", () => {
-  changeElementDisplay(startBtn, "inline-block");
-  addListener(startBtn, "click", clickStartBtn);
 });
 pubsub.subscribe("setGameStatus to won", () => {
   if (gameStatus === "won") {
@@ -88,23 +62,6 @@ pubsub.subscribe("setGameStatus to draw", () => {
     changeElementDisplay(drawDiv, "block");
   }
 });
-pubsub.subscribe("restart app", () => {
-  assignText(gameboardSquares, "", "a");
-  assignText(winText, "");
-  assignText(name, "", "v");
-  changeElementDisplay(noteDiv, "block");
-  changeElementDisplay(whatIsNameDiv, "block");
-  changeElementDisplay(gameboard, "none");
-  changeElementDisplay(drawDiv, "none");
-  changeElementDisplay(restartBtn, "none");
-  changeElementDisplay(anotherRndBtn, "none");
-  changeElementDisplay(startBtn, "none");
+pubsub.subscribe("click full restart btn", () => {
   onAppStart();
-});
-pubsub.subscribe("restart round", () => {
-  assignText(gameboardSquares, "", "a");
-  assignText(winText, "");
-  changeElementDisplay(drawDiv, "none");
-  changeElementDisplay(restartBtn, "none");
-  changeElementDisplay(anotherRndBtn, "none");
 });

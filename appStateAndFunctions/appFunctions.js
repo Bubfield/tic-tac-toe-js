@@ -11,7 +11,6 @@ import {
   openSquares,
   whoseTurn,
   whoWon,
-  gameStatus,
   user,
   AI,
 } from "./appStateAndSetters.js";
@@ -24,7 +23,7 @@ export const setWhoGoesFirst = (mark) => {
   }
 };
 
-export const restartApp = () => {
+export const resetAppStateFully = () => {
   setOpenSquares([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   setUserName("");
   setUserMark({ player: "User", mark: null });
@@ -142,8 +141,4 @@ export const checkForDraw = () => {
     setGameStatus("draw");
     return true;
   }
-};
-
-export const checkIfNOWinnerOrDraw = () => {
-  return !whoWon && gameStatus !== "draw";
 };

@@ -1,22 +1,43 @@
 import { pubsub } from "../pubsub.js";
 import {
   placeMark,
-  setUserAIMarks,
-  restartApp,
+  checkForWinOrDraw,
+  resetAppStateFully,
   restartRnd,
-  checkIfNOWinnerOrDraw,
+  setUserAIMarks,
 } from "../appStateAndFunctions/appFunctions.js";
 import {
-  setGameStatus,
   whoseTurn,
   user,
   openSquares,
   AI,
+  setGameStatus,
+  userName,
 } from "../appStateAndFunctions/appStateAndSetters.js";
-import { assignText } from "./elementOperations.js";
+import {
+  addListener,
+  assignText,
+  changeElementDisplay,
+} from "./elementOperations.js";
+import {
+  XorODiv,
+  whatIsNameDiv,
+  hello,
+  noteDiv,
+  winText,
+  drawDiv,
+  gameboard,
+  restartBtn,
+  anotherRndBtn,
+  startBtn,
+  X,
+  O,
+  name,
+  gameboardSquares,
+} from "./listOfElements.js";
 
 export function clickSquares(e) {
-  if (checkIfNOWinnerOrDraw()) {
+  if (!checkForWinOrDraw()) {
     executePlayerMove(e);
     executeAIMove();
   }
@@ -52,25 +73,51 @@ export function executeAIMove() {
 }
 
 export function clickRestartBtn() {
-  restartApp();
-  pubsub.publish("restart app");
+  resetAppStateFully();
+  assignText(gameboardSquares, "", "a");
+  assignText(winText, "");
+  assignText(name, "", "v");
+  changeElementDisplay(noteDiv, "block");
+  changeElementDisplay(whatIsNameDiv, "block");
+  changeElementDisplay(gameboard, "none");
+  changeElementDisplay(drawDiv, "none");
+  changeElementDisplay(restartBtn, "none");
+  changeElementDisplay(anotherRndBtn, "none");
+  changeElementDisplay(startBtn, "none");
+  pubsub.publish("click full restart btn");
 }
 
 export function clickAnotherRndBtn() {
   restartRnd();
-  pubsub.publish("restart round");
+  assignText(gameboardSquares, "", "a");
+  assignText(winText, "");
+  changeElementDisplay(drawDiv, "none");
+  changeElementDisplay(restartBtn, "none");
+  changeElementDisplay(anotherRndBtn, "none");
+  pubsub.publish("click start btn or another round btn");
 }
 
 export function clickEnterNameBtn() {
-  pubsub.publish("click enter btn");
+  assignText(hello, `Hello ${userName}!`);
+  changeElementDisplay(hello, "block");
+  changeElementDisplay(XorODiv, "block");
+  changeElementDisplay(whatIsNameDiv, "none");
+  addListener(X, "click", () => clickXorOMark("X"));
+  addListener(O, "click", () => clickXorOMark("O"));
 }
 
 export function clickStartBtn() {
+  changeElementDisplay(startBtn, "none");
+  changeElementDisplay(noteDiv, "none");
+  changeElementDisplay(XorODiv, "none");
+  changeElementDisplay(hello, "none");
+  changeElementDisplay(gameboard, "flex");
   setGameStatus("active");
-  pubsub.publish("setGameStatus to active");
+  pubsub.publish("click start btn or another round btn");
 }
 
 export function clickXorOMark(mark) {
   setUserAIMarks(mark);
-  pubsub.publish("click X or O mark");
+  changeElementDisplay(startBtn, "inline-block");
+  addListener(startBtn, "click", clickStartBtn);
 }
