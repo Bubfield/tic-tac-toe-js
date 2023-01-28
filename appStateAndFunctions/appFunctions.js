@@ -1,25 +1,22 @@
 import {
-  user,
-  AI,
-  gameStatus,
-  openSquares,
-  activeBoard,
-  whoseTurn,
-  whoWon,
-  setUserName,
-  setUser,
-  setAI,
+  setWhoseTurn,
+  setAIMark,
+  setActiveBoard,
   setGameStatus,
   setOpenSquares,
-  setActiveBoard,
+  setUserMark,
+  setUserName,
   setWhoWon,
-  setWhoseTurn,
+  activeBoard,
+  openSquares,
+  whoseTurn,
+  whoWon,
+  gameStatus,
+  user,
+  AI,
 } from "./appStateAndSetters.js";
 
-import { pubsub } from "./pubsub.js";
-
-//important functions
-const whoGoesFirst = (mark) => {
+export const setWhoGoesFirst = (mark) => {
   if (mark === "X") {
     setWhoseTurn("User");
   } else {
@@ -27,18 +24,18 @@ const whoGoesFirst = (mark) => {
   }
 };
 
-const fullRestart = () => {
+export const restartApp = () => {
   setOpenSquares([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   setUserName("");
-  setUser({ player: "User", mark: null });
-  setAI({ player: "AI", mark: null });
+  setUserMark({ player: "User", mark: null });
+  setAIMark({ player: "AI", mark: null });
   setGameStatus("new");
   setWhoseTurn(null);
   setWhoWon(null);
   setActiveBoard(["", "", "", "", "", "", "", "", ""]);
 };
 
-const roundRestart = () => {
+export const restartRnd = () => {
   setOpenSquares([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   setGameStatus("active");
   setWhoseTurn(user.mark === "X" ? "User" : "AI");
@@ -46,42 +43,42 @@ const roundRestart = () => {
   setActiveBoard(["", "", "", "", "", "", "", "", ""]);
 };
 
-const handleMarks = (mark) => {
-  setUser({ ...user, mark: mark });
-  setAI({ ...AI, mark: mark === "X" ? "O" : "X" });
-  whoGoesFirst(mark);
+export const setUserAIMarks = (mark) => {
+  setUserMark({ ...user, mark: mark });
+  setAIMark({ ...AI, mark: mark === "X" ? "O" : "X" });
+  setWhoGoesFirst(mark);
 };
 
-const updateActiveBoard = (whichPlayer, whichSquare) => {
+export const updateActiveBoard = (whichPlayer, whichSquare) => {
   let updatedBoard = [...activeBoard];
   updatedBoard[whichSquare] = whichPlayer;
   setActiveBoard(updatedBoard);
 };
 
-const updateOpenSquares = (whichSquare) => {
+export const updateOpenSquares = (whichSquare) => {
   setOpenSquares(
     openSquares.filter((squareID) => squareID !== whichSquare + 1)
   );
 };
 
-const isAnOpenSquare = (whichSquare) => {
+export const checkIsOpenSquare = (whichSquare) => {
   return openSquares.indexOf(whichSquare + 1) !== -1;
 };
 
-const itIsPlayersTurn = (player) => {
+export const checkIsPlayersTurn = (player) => {
   return player === whoseTurn;
 };
 
-const isThereWinOrDraw = () => {
+export const checkForWinOrDraw = () => {
   return checkForWin() || checkForDraw();
 };
 
-const placeMark = (whichPlayer, whichSquare) => {
+export const placeMark = (whichPlayer, whichSquare) => {
   const { player, mark } = whichPlayer;
-  if (isAnOpenSquare(whichSquare) && itIsPlayersTurn(player)) {
+  if (checkIsOpenSquare(whichSquare) && checkIsPlayersTurn(player)) {
     updateActiveBoard(mark, whichSquare);
     updateOpenSquares(whichSquare);
-    if (!isThereWinOrDraw()) {
+    if (!checkForWinOrDraw()) {
       triggerNextTurn();
     }
   } else {
@@ -89,7 +86,7 @@ const placeMark = (whichPlayer, whichSquare) => {
   }
 };
 
-const triggerNextTurn = () => {
+export const triggerNextTurn = () => {
   if (whoseTurn === "User") {
     setWhoseTurn("AI");
   } else {
@@ -97,39 +94,39 @@ const triggerNextTurn = () => {
   }
 };
 
-const allSquaresAreOccupied = (one, two, three) => {
+export const checkRowIsOccupied = (one, two, three) => {
   return one && two && three;
 };
 
-const allSquaresAreEqual = (one, two, three) => {
+export const checkRowSquaresAreEqual = (one, two, three) => {
   return one === two && one === three;
 };
 
-const checkRow = (num1, num2, num3) => {
+export const checkRow = (num1, num2, num3) => {
   let one = activeBoard[num1];
   let two = activeBoard[num2];
   let three = activeBoard[num3];
-  if (allSquaresAreOccupied(one, two, three)) {
-    if (allSquaresAreEqual(one, two, three)) {
+  if (checkRowIsOccupied(one, two, three)) {
+    if (checkRowSquaresAreEqual(one, two, three)) {
       setWhoWon(one);
       return true;
     }
   }
 };
 
-const checkHorizontalStreaks = () => {
+export const checkHorizontalStreaks = () => {
   return checkRow(0, 1, 2) || checkRow(3, 4, 5) || checkRow(6, 7, 8);
 };
 
-const checkVerticalStreaks = () => {
+export const checkVerticalStreaks = () => {
   return checkRow(0, 3, 6) || checkRow(1, 4, 7) || checkRow(2, 5, 8);
 };
 
-const checkDiagonalStreaks = () => {
+export const checkDiagonalStreaks = () => {
   return checkRow(0, 4, 8) || checkRow(2, 4, 6);
 };
 
-const checkForWin = () => {
+export const checkForWin = () => {
   if (
     checkHorizontalStreaks() ||
     checkVerticalStreaks() ||
@@ -140,35 +137,13 @@ const checkForWin = () => {
   }
 };
 
-const checkForDraw = () => {
+export const checkForDraw = () => {
   if (!whoWon && !openSquares.length) {
     setGameStatus("draw");
     return true;
   }
 };
 
-const thereIsNoWinnerOrDraw = () => {
+export const checkIfNOWinnerOrDraw = () => {
   return !whoWon && gameStatus !== "draw";
-};
-
-export {
-  thereIsNoWinnerOrDraw,
-  checkForDraw,
-  checkForWin,
-  checkDiagonalStreaks,
-  checkVerticalStreaks,
-  checkHorizontalStreaks,
-  checkRow,
-  allSquaresAreEqual,
-  allSquaresAreOccupied,
-  triggerNextTurn,
-  itIsPlayersTurn,
-  isAnOpenSquare,
-  placeMark,
-  updateActiveBoard,
-  updateOpenSquares,
-  handleMarks,
-  whoGoesFirst,
-  fullRestart,
-  roundRestart,
 };
