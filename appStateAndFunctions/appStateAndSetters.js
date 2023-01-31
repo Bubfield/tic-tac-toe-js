@@ -1,4 +1,3 @@
-//state variables
 export let userName = "";
 export let user = { player: "User", mark: null };
 export let AI = { player: "AI", mark: null };
@@ -8,7 +7,6 @@ export let activeBoard = ["", "", "", "", "", "", "", "", ""];
 export let whoseTurn = null;
 export let whoWon = null;
 
-//state setters
 export const setUserName = (name) => {
   userName = name;
 };

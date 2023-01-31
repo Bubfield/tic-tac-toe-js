@@ -98,12 +98,13 @@ export function clickAnotherRndBtn() {
 }
 
 export function clickEnterNameBtn() {
-  assignText(hello, `Hello ${userName}!`);
-  changeElementDisplay(hello, "block");
-  changeElementDisplay(XorODiv, "block");
-  changeElementDisplay(whatIsNameDiv, "none");
-  addListener(X, "click", () => clickXorOMark("X"));
-  addListener(O, "click", () => clickXorOMark("O"));
+  if (userName) {
+    assignText(hello, `Hello ${userName}!`);
+    changeElementDisplay(XorODiv, "block");
+    changeElementDisplay(whatIsNameDiv, "none");
+    addListener(X, "click", () => clickXorOMark("X"));
+    addListener(O, "click", () => clickXorOMark("O"));
+  }
 }
 
 export function clickStartBtn() {
